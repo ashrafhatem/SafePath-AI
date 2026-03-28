@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
-
+import os
 # Import modules
 from config import CELL_SIZE, grid_numeric, corridor_map, shop_labels, corridors, fire_cells, exit_labels
 from database import init_db, authenticate_user, get_all_supervisors, get_supervisor_stats, add_supervisor, update_supervisor, delete_supervisor, add_report, update_report, get_all_reports, clear_reports, get_reports_by_date, log_sms_sent, get_notified_users_by_date
@@ -588,6 +588,7 @@ def debug_sms_logs():
         return jsonify({"tables": tables, "daily_sms_rows": rows, "count": len(rows)})
     except Exception as e:
         return jsonify({"error": str(e)})
-
+        
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
