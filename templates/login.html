@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FREDT Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="split-container">
+        <!-- Left Side: Information -->
+        <div class="left-panel">
+            <div class="brand">
+                <div class="logo-icon">🔥</div>
+                <div class="brand-text">
+                    <strong>FREDT</strong>
+                    <span>Fire Risk & Evacuation Digital Twin</span>
+                </div>
+            </div>
+
+            <div class="status-badge">
+                <span class="dot"></span> All Systems Operational
+            </div>
+
+            <h1>Secure Access to FREDT Platform</h1>
+            <p class="description">
+                Monitor fire risk, manage safety protocols, and generate actionable insights in one unified place.
+            </p>
+
+            <ul class="features">
+                <li>
+                    <span class="icon">🛡️</span>
+                    Real-time Fire Risk Prediction
+                </li>
+                <li>
+                    <span class="icon">👥</span>
+                    Smart Evacuation Management
+                </li>
+                <li>
+                    <span class="icon">📈</span>
+                    AI-Powered Analytics Dashboard
+                </li>
+            </ul>
+
+            <div class="footer-text">
+                &copy; 2024 FREDT Platform. All rights reserved.
+            </div>
+        </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="right-panel">
+            <div class="login-card">
+                <div class="card-logo">🔥</div>
+                <h2>Welcome Back to FREDT</h2>
+                <p class="subtitle">Sign in to continue to your dashboard</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="/login">
+                    <div class="form-group">
+                        <label for="username">User Name / Email</label>
+                        <input type="text" id="username" name="username" placeholder="admin" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-input">
+                            <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            <span class="eye-icon">👁️</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-signin">Sign In</button>
+                </form>
+
+                <div class="security-note">
+                    🔒 Enterprise-Grade Security • 256-bit SSL Encryption
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

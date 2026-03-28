@@ -1,0 +1,255 @@
+/* ===== ADMIN PAGE SPECIFIC STYLES ===== */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.admin-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+.admin-subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.admin-header-right {
+    margin-top: 5px;
+}
+
+.admin-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.admin-user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.admin-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-role {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.admin-stats-row {
+    margin-bottom: 20px;
+}
+
+.admin-stat-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Custom bg colors matched from image */
+.bg-primary-light-custom {
+    background-color: #dceada;
+    border-color: transparent;
+}
+
+.bg-success-light-custom {
+    background-color: #dceada;
+    border-color: transparent;
+}
+
+.bg-purple-light-custom {
+    background-color: #dceada;
+    border-color: transparent;
+}
+
+.admin-table-container {
+    padding: 0;
+    overflow: visible;
+}
+
+.admin-filters {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filters-left {
+    display: flex;
+    gap: 15px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--text-muted);
+}
+
+.search-box input {
+    padding: 8px 10px 8px 30px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    font-family: var(--font-family);
+}
+
+.filter-select {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    font-family: var(--font-family);
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.filters-right {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-export {
+    background-color: transparent;
+}
+
+.btn-add-supervisor {
+    background-color: #3f61c6;
+    color: white;
+    padding: 8px 16px;
+    width: auto;
+}
+
+.btn-add-supervisor:hover {
+    background-color: #314c9e;
+}
+
+/* Table styling */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.admin-table th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-fullname {
+    font-weight: 600;
+}
+
+.user-email {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.role-badge {
+    color: var(--text-muted);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-badge.active {
+    background-color: #e8f5e9;
+    color: var(--color-success);
+}
+
+.status-badge.active .status-dot {
+    background-color: var(--color-success);
+}
+
+.status-badge.inactive {
+    background-color: #f5f5f5;
+    color: var(--text-muted);
+}
+
+.status-badge.inactive .status-dot {
+    background-color: var(--text-muted);
+}
+
+.status-badge.pending {
+    background-color: #fdf3e8;
+    color: var(--color-warning);
+}
+
+.status-badge.pending .status-dot {
+    background-color: var(--color-warning);
+}
+
+.status-badge.suspended {
+    background-color: #fcebeb;
+    color: var(--color-danger);
+}
+
+.status-badge.suspended .status-dot {
+    background-color: var(--color-danger);
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    align-items: center;
+}
+
+.page-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.page-arrows {
+    letter-spacing: 5px;
+    cursor: pointer;
+}

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvacMonitor - Admin Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">🛡️</div>
+                <div class="logo-text">EvacMonitor</div>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">JD</div>
+                <div class="user-info">
+                    <div class="username">John Doe</div>
+                    <div class="role">System Admin</div>
+                </div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="/admin" class="nav-item active">
+                    <span class="icon">⊞</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📈</span> Live Monitoring
+                </a>
+                <a href="/" class="nav-item">
+                    <span class="icon">🗺️</span> Evacuation Map
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🛡️</span> Risk Analysis
+                </a>
+
+                <div class="nav-section-title">ANALYTICS</div>
+                <a href="/reports" class="nav-item">
+                    <span class="icon">📄</span> Reports
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⏱️</span> History Logs
+                </a>
+
+                <div class="nav-section-title" style="margin-top: 20px;">ACCOUNT</div>
+                <a href="/logout" class="nav-item" style="color: #ff4d4f;">
+                    <span class="icon" style="color: inherit;">🚪</span> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header for Admin Management -->
+            <header class="admin-header">
+                <div>
+                    <h1 class="admin-title">Admin Management</h1>
+                    <p class="admin-subtitle">Manage supervisors, roles, and platform access permissions.</p>
+                </div>
+
+                <div class="header-right admin-header-right">
+                    <div class="header-actions">
+                        <span class="bell-icon">🔔</span>
+                        <div class="admin-user-profile">
+                            <div class="admin-user-info">
+                                <span class="admin-name">John Doe</span>
+                                <span class="admin-role">System Admin</span>
+                            </div>
+                            <div class="small-avatar">JD</div>
+                            <span class="dropdown-icon">⌄</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats/Cards Row -->
+            <div class="admin-stats-row stats-row">
+                <div class="stat-card admin-stat-card bg-primary-light-custom">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-primary-light"><span class="stat-icon">👥</span></div>
+                    </div>
+                    <div>
+                        <div class="stat-label">Total Admins</div>
+                        <div class="stat-value">{{ total_admins }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-card admin-stat-card bg-success-light-custom">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-success-light"><span class="stat-icon">🛡️</span></div>
+                    </div>
+                    <div>
+                        <div class="stat-label">Active Roles</div>
+                        <div class="stat-value">{{ active_roles }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-card admin-stat-card bg-purple-light-custom">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-purple-light"><span class="stat-icon">⏱️</span></div>
+                    </div>
+                    <div>
+                        <div class="stat-label">Pending Approvals</div>
+                        <div class="stat-value">{{ pending_approvals }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area (Table) -->
+            <div class="admin-table-container map-section">
+                <!-- Filters Bar -->
+                <div class="admin-filters">
+                    <div class="filters-left">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" placeholder="Search users...">
+                        </div>
+                        <select class="filter-select">
+                            <option>All Roles</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Status</option>
+                        </select>
+                    </div>
+                    <div class="filters-right">
+                        <button class="btn btn-secondary btn-export">
+                            <span class="icon">📥</span> Export
+                        </button>
+                        <button class="btn btn-primary btn-add-supervisor"
+                            onclick="document.getElementById('addSupervisorModal').style.display='flex'">
+                            <span class="icon">+</span> Add Supervisor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>FULL NAME</th>
+                                <th>ROLE</th>
+                                <th>CORRIDOR</th>
+                                <th>STATUS</th>
+                                <th>JOINED DATE</th>
+                                <th>LAST ACTIVE</th>
+                                <th>MANAGE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in supervisors %}
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="user-details">
+                                        <div class="user-fullname">{{ s.full_name }}</div>
+                                        <div class="user-email">{{ s.email }}</div>
+                                    </div>
+                                </td>
+                                <td><span class="role-badge">{{ s.role }}</span></td>
+                                <td><span class="role-badge" style="background: #e0e7ff; color: #3730a3;">{{ s.corridor
+                                        }}</span></td>
+                                <td>
+                                    <span class="status-badge {{ s.status|lower }}">
+                                        <span class="status-dot"></span> {{ s.status }}
+                                    </span>
+                                </td>
+                                <td>{{ s.joined_date }}</td>
+                                <td>{{ s.last_active }}</td>
+                                <td style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm"
+                                        onclick="openEditModal('{{ s.id }}', '{{ s.full_name }}', '{{ s.email }}', '{{ s.phone }}', '{{ s.role }}', '{{ s.status }}', '{{ s.corridor }}')"
+                                        style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                    {% if s.email != 'admin' %}
+                                    <form action="/delete_supervisor/{{ s.id }}" method="POST" style="display:inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this supervisor?');">
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                            style="padding: 4px 8px; font-size: 12px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <svg class="alert-bell-icon" data-id="{{ s.id }}"
+                                        data-phone="{{ s.phone }}" data-name="{{ s.full_name }}"
+                                        viewBox="0 0 24 24" width="24"
+                                        height="24" style="fill: #94a3b8; transition: all 0.3s;" title="Alert Status">
+                                        <path
+                                            d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V10c0-3.07-1.63-5.64-4.5-6.32V3a1.5 1.5 0 0 0-3 0v.68C7.64 4.36 6 6.92 6 10v6l-2 2v1h16v-1l-2-2z" />
+                                    </svg>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" style="text-align:center;">No supervisors found. Click below to add one!
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="rows-per-page">Rows per page: <strong>10</strong></div>
+                    <div class="page-controls">
+                        <span>1-5 of 24</span>
+                        <span class="page-arrows">&lt; &gt;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire Alerts Floating Button -->
+            <button class="fire-alerts-btn" onclick="openFireAlertsModal()"
+                style="position: fixed; bottom: 30px; right: 30px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 20px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 1000; transition: all 0.2s;">
+                <span style="font-size: 16px;">🔔</span> Fire Alerts
+            </button>
+
+        </main>
+    </div>
+
+    <!-- Modal for editing supervisor -->
+    <div id="editSupervisorModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-main); padding:30px; border-radius:12px; width:400px; max-width:90%;">
+            <h2 style="margin-top:0;">Edit Supervisor</h2>
+            <form id="editSupervisorForm" action="/edit_supervisor/0" method="POST"
+                style="display:flex; flex-direction:column; gap:15px;">
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">FULL NAME</label><br>
+                    <input type="text" name="full_name" id="edit_full_name" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">EMAIL ADDRESS</label><br>
+                    <input type="email" name="email" id="edit_email" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">PHONE NUMBER</label><br>
+                    <input type="text" name="phone" id="edit_phone" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">ROLE</label><br>
+                    <select name="role" id="edit_role"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">CORRIDOR</label><br>
+                    <select name="corridor" id="edit_corridor"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="None">None</option>
+                        <option value="All">All Corridors</option>
+                        <option value="A">Corridor A</option>
+                        <option value="B">Corridor B</option>
+                        <option value="C">Corridor C</option>
+                        <option value="D">Corridor D</option>
+                        <option value="E">Corridor E</option>
+                        <option value="F">Corridor F</option>
+                        <option value="G">Corridor G</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">STATUS</label><br>
+                    <select name="status" id="edit_status"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                    <button type="button" class="btn btn-secondary" style="width:auto;"
+                        onclick="document.getElementById('editSupervisorModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary"
+                        style="width:auto; background-color:#3f61c6; color:white;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for adding supervisor -->
+    <div id="addSupervisorModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-main); padding:30px; border-radius:12px; width:400px; max-width:90%;">
+            <h2 style="margin-top:0;">Add New Supervisor</h2>
+            <form action="/add_supervisor" method="POST" style="display:flex; flex-direction:column; gap:15px;">
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">FULL NAME</label><br>
+                    <input type="text" name="full_name" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">EMAIL ADDRESS</label><br>
+                    <input type="email" name="email" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">PHONE NUMBER</label><br>
+                    <input type="text" name="phone" required
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">PASSWORD</label><br>
+                    <input type="password" name="password" placeholder="Leave empty for default: 123456"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:transparent; font-family:var(--font-family); box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">ROLE</label><br>
+                    <select name="role"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">CORRIDOR</label><br>
+                    <select name="corridor"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="None">None</option>
+                        <option value="All">All Corridors</option>
+                        <option value="A">Corridor A</option>
+                        <option value="B">Corridor B</option>
+                        <option value="C">Corridor C</option>
+                        <option value="D">Corridor D</option>
+                        <option value="E">Corridor E</option>
+                        <option value="F">Corridor F</option>
+                        <option value="G">Corridor G</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">STATUS</label><br>
+                    <select name="status"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.4); font-family:var(--font-family); box-sizing:border-box;">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                    <button type="button" class="btn btn-secondary" style="width:auto;"
+                        onclick="document.getElementById('addSupervisorModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary"
+                        style="width:auto; background-color:#3f61c6; color:white;">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="fireAlertsModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div
+            style="background:var(--bg-main); padding:30px; border-radius:12px; width:900px; max-width:95%; max-height: 90vh; overflow-y: auto;">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 24px;">Fire Alerts</h2>
+                    <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Select users to send SMS alerts</p>
+                </div>
+                <button class="btn btn-secondary"
+                    onclick="document.getElementById('fireAlertsModal').style.display='none'">Close</button>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div
+                    style="flex: 1; padding: 20px; background: white; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 24px; font-weight: bold;">{{ supervisors|selectattr('status', 'equalto',
+                        'Active')|list|length }}</div>
+                    <div style="color: #666; font-size: 14px;">Active Fire Alerts</div>
+                </div>
+                <div
+                    style="flex: 1; padding: 20px; background: white; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 24px; font-weight: bold;">{{ supervisors|selectattr('status', 'equalto',
+                        'Inactive')|list|length }}</div>
+                    <div style="color: #666; font-size: 14px;">Inactive Fire Alerts</div>
+                </div>
+                <div
+                    style="flex: 1; padding: 20px; background: white; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 24px; font-weight: bold;">{{ supervisors|length }}</div>
+                    <div style="color: #666; font-size: 14px;">Total User</div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <input type="text" placeholder="Search User"
+                    style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px;">
+                <select style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    <option>Select an alert to send</option>
+                </select>
+                <div
+                    style="display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 6px; padding: 0 10px; flex: 1; min-width: 250px;">
+                    <input type="text" id="bulkSmsMessage" placeholder="write a new warning and sent it"
+                        style="border: none; outline: none; padding: 8px 0; width: 100%;">
+                    <button onclick="sendBulkAlerts()"
+                        style="background: none; border: none; cursor: pointer; color: #666;">➤</button>
+                </div>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="selectAllFireAlerts" onchange="toggleAllAlertCheckboxes(this)"> Select
+                    all
+                </label>
+            </div>
+
+            <!-- User Cards Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px;">
+                {% for s in supervisors %}
+                <div class="user-card"
+                    style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" class="alert-user-checkbox" data-id="{{ s.id }}"
+                                data-phone="{{ s.phone }}" data-name="{{ s.full_name }}" onchange="updateColors()">
+                            <span style="font-weight: 600; text-transform: uppercase;">{{ s.full_name }}</span>
+                            <span class="role-badge" style="font-size: 10px; padding: 2px 6px;">{{ s.role }}</span>
+                        </div>
+                        <svg class="modal-bell-icon" data-id="{{ s.id }}" viewBox="0 0 24 24" width="20" height="20"
+                            style="fill: #94a3b8; transition: all 0.3s;">
+                            <path
+                                d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V10c0-3.07-1.63-5.64-4.5-6.32V3a1.5 1.5 0 0 0-3 0v.68C7.64 4.36 6 6.92 6 10v6l-2 2v1h16v-1l-2-2z" />
+                        </svg>
+                    </div>
+                    <div style="font-size: 16px; font-weight: bold; letter-spacing: 1px;">
+                        {{ s.phone if s.phone else '05XXXXXXXX' }}
+                    </div>
+                    <div style="color: #666; font-size: 13px; line-height: 1.4;">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hendrerit vulputate viverra...
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="submitDoneAlerts()"
+                    style="background-color: #3b82f6;">Done</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(id, fullName, email, phone, role, status, corridor) {
+            document.getElementById('editSupervisorForm').action = '/edit_supervisor/' + id;
+            document.getElementById('edit_full_name').value = fullName;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_phone').value = phone;
+            document.getElementById('edit_role').value = role;
+            document.getElementById('edit_status').value = status;
+            document.getElementById('edit_corridor').value = corridor || 'None';
+            document.getElementById('editSupervisorModal').style.display = 'flex';
+        }
+
+        function toggleBellColor(btn) {
+            if (btn.style.color === 'rgb(102, 102, 102)' || btn.style.color === '#666' || btn.style.color === '') {
+                btn.style.color = '#ff4d4f'; // Red color when active
+            } else {
+                btn.style.color = '#666'; // Back to default
+            }
+        }
+
+        function openFireAlertsModal() {
+            document.getElementById('fireAlertsModal').style.display = 'flex';
+        }
+
+        function toggleAllAlertCheckboxes(mainCheckbox) {
+            const checkboxes = document.querySelectorAll('.alert-user-checkbox');
+            checkboxes.forEach(cb => cb.checked = mainCheckbox.checked);
+            updateColors();
+        }
+
+
+
+        function sendBulkAlerts() {
+            const messageInput = document.getElementById('bulkSmsMessage');
+            const msg = messageInput.value.trim() || 'Warning: Potential fire alert. Please follow evacuation procedures.';
+
+            const checkboxes = document.querySelectorAll('.alert-user-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one user to send an alert to.');
+                return false;
+            }
+
+            let sentCount = 0;
+            checkboxes.forEach(cb => {
+                const phone = cb.getAttribute('data-phone');
+                const id = cb.getAttribute('data-id');
+                if (phone && phone.trim() !== '' && !phone.includes('XXX')) {
+                    fetch('/send_sms', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone: phone, message: msg, user_id: id })
+                    });
+
+                    const bell = cb.closest('.user-card').querySelector('.modal-bell-icon');
+                    if (bell) bell.style.fill = '#f43f5e'; // turn this specific user's bell red
+
+                    sentCount++;
+                }
+            });
+
+            if (sentCount > 0) {
+                alert('Initiated ' + sentCount + ' SMS alerts.');
+                messageInput.value = '';
+                return true;
+            } else {
+                alert('No valid phone numbers found among the selected users.');
+                return false;
+            }
+        }
+
+        function submitDoneAlerts() {
+            const checkboxes = document.querySelectorAll('.alert-user-checkbox:checked');
+            if (checkboxes.length > 0) {
+                const success = sendBulkAlerts();
+                if (success) {
+                    document.getElementById('fireAlertsModal').style.display = 'none';
+                }
+            } else {
+                document.getElementById('fireAlertsModal').style.display = 'none';
+            }
+        }
+
+        function updateColors() {
+            const alertedServer = window.lastAlertedUsers || [];
+            const selectedCheckboxes = Array.from(document.querySelectorAll('.alert-user-checkbox:checked')).map(cb => parseInt(cb.getAttribute('data-id')));
+
+            const combinedAlerted = new Set([...alertedServer, ...selectedCheckboxes]);
+
+            // Update Table Bells
+            document.querySelectorAll('.alert-bell-icon').forEach(icon => {
+                const id = parseInt(icon.getAttribute('data-id'));
+                const row = icon.closest('tr');
+                if (combinedAlerted.has(id)) {
+                    icon.style.fill = '#eab308';
+                    icon.style.filter = 'drop-shadow(0 0 4px rgba(234, 179, 8, 0.4))';
+                    if (row) row.style.backgroundColor = 'rgba(234, 179, 8, 0.05)';
+                } else {
+                    icon.style.fill = '#94a3b8';
+                    icon.style.filter = 'none';
+                    if (row) row.style.backgroundColor = 'transparent';
+                }
+            });
+
+            // Update Modal/Card Bells
+            document.querySelectorAll('.modal-bell-icon').forEach(icon => {
+                const id = parseInt(icon.getAttribute('data-id'));
+                const card = icon.closest('.user-card');
+                if (combinedAlerted.has(id)) {
+                    icon.style.fill = '#eab308';
+                    icon.style.filter = 'drop-shadow(0 0 4px rgba(234, 179, 8, 0.4))';
+                    if (card) {
+                        card.style.borderColor = '#eab308';
+                        card.style.backgroundColor = 'rgba(234, 179, 8, 0.02)';
+                    }
+                } else {
+                    icon.style.fill = '#94a3b8';
+                    icon.style.filter = 'none';
+                    if (card) {
+                        card.style.borderColor = 'var(--border-color)';
+                        card.style.backgroundColor = 'white';
+                    }
+                }
+            });
+        }
+
+        // Poll server for users who should have yellow alert bells
+        setInterval(() => {
+            fetch('/admin/alerts_status')
+                .then(res => res.json())
+                .then(data => {
+                    const newAlerted = data.alerted_user_ids || [];
+
+                    // If the server was formerly reporting alerts and now it is empty, 
+                    // it means the fire simulation has ended. We clear the manual checkboxes.
+                    if (newAlerted.length === 0 && window.lastAlertedUsers && window.lastAlertedUsers.length > 0) {
+                        document.querySelectorAll('.alert-user-checkbox').forEach(cb => cb.checked = false);
+                        const selectAll = document.getElementById('selectAllFireAlerts');
+                        if (selectAll) selectAll.checked = false;
+                    }
+
+                    window.lastAlertedUsers = newAlerted;
+                    updateColors();
+                })
+                .catch(err => console.error("Alert Polling Error:", err));
+        }, 2000);
+    </script>
+</body>
+
+</html>

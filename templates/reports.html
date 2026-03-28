@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvacMonitor - Reports</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .report-row { cursor: pointer; transition: background-color 0.2s; }
+        .report-row:hover { background-color: rgba(63, 97, 198, 0.05); }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">&#x1F6E1;&#xFE0F;</div>
+                <div class="logo-text">EvacMonitor</div>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">JD</div>
+                <div class="user-info">
+                    <div class="username">John Doe</div>
+                    <div class="role">System Admin</div>
+                </div>
+                <div class="settings-icon">&#x2699;&#xFE0F;</div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="/admin" class="nav-item">
+                    <span class="icon">&#x229E;</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">&#x1F4C8;</span> Live Monitoring
+                </a>
+                <a href="/" class="nav-item">
+                    <span class="icon">&#x1F5FA;&#xFE0F;</span> Evacuation Map
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">&#x1F6E1;&#xFE0F;</span> Risk Analysis
+                </a>
+
+                <div class="nav-section-title">ANALYTICS</div>
+                <a href="/reports" class="nav-item active">
+                    <span class="icon">&#x1F4C4;</span> Reports
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">&#x23F1;&#xFE0F;</span> History Logs
+                </a>
+
+                <div class="nav-section-title" style="margin-top: 20px;">ACCOUNT</div>
+                <a href="/logout" class="nav-item" style="color: #ff4d4f;">
+                    <span class="icon" style="color: inherit;">&#x1F6AA;</span> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="admin-header">
+                <div>
+                    <h1 class="admin-title">Incident Reports</h1>
+                    <p class="admin-subtitle">View historical fire incidents grouped by day. Click a day to see all fires.</p>
+                </div>
+
+                <div class="header-right admin-header-right">
+                    <div class="header-actions">
+                        <span class="bell-icon">&#x1F514;</span>
+                        <div class="admin-user-profile">
+                            <div class="admin-user-info">
+                                <span class="admin-name">John Doe</span>
+                                <span class="admin-role">System Admin</span>
+                            </div>
+                            <div class="small-avatar">JD</div>
+                            <span class="dropdown-icon">&#x23C4;</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area (Table) -->
+            <div class="admin-table-container map-section" style="margin-top: 20px;">
+                <!-- Filters Bar -->
+                <div class="admin-filters">
+                    <div class="filters-left">
+                        <div class="search-box">
+                            <span class="search-icon">&#x1F50D;</span>
+                            <input type="text" id="dateSearch" placeholder="Search by date..." oninput="filterTable()">
+                        </div>
+                    </div>
+                    <div class="filters-right">
+                        <button class="btn btn-danger" onclick="clearAllReports()" style="background-color: #ff4d4f; color: white;">
+                            <span class="icon">&#x1F5D1;&#xFE0F;</span> Clear All Reports
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table class="admin-table" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>DATE</th>
+                                <th>TOTAL FIRES</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in days %}
+                            <tr class="report-row" onclick="window.location.href='/report_details/{{ day.date }}'">
+                                <td>
+                                    <span style="background:#e0e7ff;color:#4338ca;padding:3px 10px;border-radius:6px;font-weight:700;font-size:12px;">
+                                        DAY-{{ loop.index }}
+                                    </span>
+                                </td>
+                                <td style="font-weight: 600; font-size: 15px;">{{ day.date }}</td>
+                                <td>
+                                    <span style="display:inline-flex;align-items:center;gap:6px;background:#fff1f0;color:#cf1322;border:1px solid #ffa39e;padding:4px 14px;border-radius:6px;font-weight:700;">
+                                        &#x1F525; {{ day.fire_count }} fire{{ 's' if day.fire_count != 1 else '' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/report_details/{{ day.date }}"
+                                       onclick="event.stopPropagation()"
+                                       style="background:var(--primary-color);color:#fff;padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">
+                                        View Details &#x2192;
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align:center; padding-top: 20px; color: #888;">
+                                    No historical incident reports found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination info -->
+                <div class="pagination">
+                    <div class="rows-per-page">Rows per page: <strong>10</strong></div>
+                    <div class="page-controls">
+                        <span>{{ days | length }} day(s) total</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function clearAllReports() {
+            if(confirm("Are you sure you want to clear all historical reports? This cannot be undone.")) {
+                fetch('/clear_reports', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        window.location.reload();
+                    } else {
+                        alert("Error clearing reports");
+                    }
+                });
+            }
+        }
+
+        function filterTable() {
+            const query = document.getElementById('dateSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#reportsTable tbody tr.report-row');
+            rows.forEach(row => {
+                const dateCell = row.cells[1].textContent.toLowerCase();
+                row.style.display = dateCell.includes(query) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvacMonitor - Live Monitoring</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">🛡️</div>
+                <div class="logo-text">EvacMonitor</div>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">JD</div>
+                <div class="user-info">
+                    <div class="username">John Doe</div>
+                    <div class="role">System Admin</div>
+                </div>
+                <div class="settings-icon">⚙️</div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="/admin" class="nav-item">
+                    <span class="icon">⊞</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📈</span> Live Monitoring
+                </a>
+                <a href="/" class="nav-item active">
+                    <span class="icon">🗺️</span> Evacuation Map
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🛡️</span> Risk Analysis
+                </a>
+
+                <div class="nav-section-title">ANALYTICS</div>
+                <a href="/reports" class="nav-item">
+                    <span class="icon">📄</span> Reports
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⏱️</span> History Logs
+                </a>
+
+                <div class="nav-section-title" style="margin-top: 20px;">ACCOUNT</div>
+                <a href="/logout" class="nav-item" style="color: #ff4d4f;">
+                    <span class="icon" style="color: inherit;">🚪</span> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <div class="breadcrumbs">
+                        <span class="text-muted">Dashboard &rsaquo;</span> <strong>Live Monitoring</strong>
+                    </div>
+                    <div class="building-selector">
+                        🏢 Building A - Floor 3 <span class="dropdown-icon">⌄</span>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="role-tabs">
+                        <span class="role-tab active">Admin</span>
+                        <span class="role-tab">Manager</span>
+                        <span class="role-tab">Safety</span>
+                    </div>
+
+                    <div class="emergency-toggle">
+                        <span class="toggle-label">Emergency Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="emergencySwitch">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="header-actions">
+                        <span class="bell-icon">🔔</span>
+                        <div class="small-avatar">JD</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats/Cards Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-danger-light"><span class="stat-icon">🔥</span></div>
+                        <span class="trend high">↗ High</span>
+                    </div>
+                    <div class="stat-value" id="globalStatus">Safe</div>
+                    <div class="stat-label">Severity Level</div>
+                </div>
+
+
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-success-light"><span class="stat-icon">👥</span></div>
+                        <span class="trend increase">+12%</span>
+                    </div>
+                    <div class="stat-value" id="crowdCount">0</div>
+                    <div class="stat-label">Crowded Corridors</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-primary-light"><span class="stat-icon">👤</span></div>
+                        <span class="trend neutral">Stable</span>
+                    </div>
+                    <div class="stat-value" id="totalPeople">0</div>
+                    <div class="stat-label">Total People</div>
+                </div>
+
+                <div class="stat-card active-border">
+                    <div class="stat-header">
+                        <div class="icon-circle bg-danger-light"><span class="stat-icon">🚨</span></div>
+                        <span class="trend text-danger">Active</span>
+                    </div>
+                    <div class="stat-value" id="activeAlertsCount">0</div>
+                    <div class="stat-label">Active Fire Alerts</div>
+                </div>
+            </div>
+
+            <!-- Content Area (Map + Side Panel) -->
+            <div class="content-area">
+                <!-- Map Section -->
+                <div class="map-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            Live Evacuation Grid <span class="live-badge"><span class="live-dot"></span> Live</span>
+                        </div>
+                        <div class="map-controls">
+                            <span>−</span>
+                            <span>100%</span>
+                            <span>+</span>
+                            <span>⛶</span>
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <svg id="map" width="100%" height="100%"></svg>
+                    </div>
+                </div>
+
+                <!-- Live Insights Panel -->
+                <aside class="insights-panel">
+                    <h3>Live Insights Panel</h3>
+
+                    <div class="insight-section">
+                        <div class="section-label">SELECTED ZONE</div>
+                        <div class="selected-zone-card" id="cellInfo">
+                            <div class="placeholder-text">Click a cell to see details</div>
+                        </div>
+                    </div>
+
+                    <div class="insight-section">
+                        <div class="section-label">🔥 ACTIVE FIRES</div>
+                        <div class="fire-list-container" id="fireList">
+                            No active fires
+                        </div>
+                    </div>
+
+                    <div class="insight-section">
+                        <div class="section-label">LEGEND</div>
+                        <div class="legend-grid">
+                            <div class="legend-item"><span class="color-box bg-fire"></span> Fire</div>
+                            <div class="legend-item"><span class="color-box bg-wall"></span> Wall</div>
+                            <div class="legend-item"><span class="color-box bg-congested"></span> Congested Corridor</div>
+                            <div class="legend-item"><span class="color-box bg-warning"></span> Warning (Shop)</div>
+                            <div class="legend-item"><span class="color-box bg-path"></span> Best Evacuation Path</div>
+                            <div class="legend-item"><span class="color-box bg-exit"></span> Exit</div>
+                            <div class="legend-item"><span class="color-box bg-tracking"></span> Normal Corridor</div>
+                        </div>
+                    </div>
+
+                    <div class="insight-section actions-section">
+                        <div class="section-label">🔥 FIRE SIMULATOR</div>
+                        <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 5px;">
+                                <span style="font-weight: 600; font-size: 14px; color: #333;">Current Time:</span>
+                                <span id="simTimeDisplay" style="font-family: monospace; font-size: 18px; font-weight: bold; color: #ff4d4f;">0.0s</span>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <select id="simShop" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <option value="">Select a shop...</option>
+                                    {% for (r, c), name in shops.items() %}
+                                    <option value="{{ r }},{{ c }}">{{ name }} ({{ r }},{{ c }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="simStart" placeholder="Start(s)" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                <input type="number" id="simEnd" placeholder="End(s)" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                            </div>
+                            <button class="btn btn-secondary" onclick="addSimFire()" style="width: 100%; justify-content: center;">+ Add Fire Event</button>
+                            <div id="simFireList" style="font-size: 13px; color: #666; max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                <!-- list of added fires -->
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <button class="btn btn-danger" onclick="startSim()" style="flex:1; background-color: #ff4d4f; color: white;">▶ Start</button>
+                                <button class="btn btn-secondary" onclick="clearSim()" style="flex:1;">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-section actions-section">
+                        <div class="section-label">🚦 CONGESTION SIMULATOR</div>
+                        <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px;">
+                                <select id="simCorridor" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <option value="">Select Corridor...</option>
+                                    <option value="Corridor A">Corridor A</option>
+                                    <option value="Corridor B">Corridor B</option>
+                                    <option value="Corridor C">Corridor C</option>
+                                    <option value="Corridor D">Corridor D</option>
+                                    <option value="Corridor E">Corridor E</option>
+                                    <option value="Corridor F">Corridor F</option>
+                                    <option value="Corridor G">Corridor G</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="simPeople" placeholder="People Count (e.g. 50+ blocks)" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="simCongStart" placeholder="Start(s)" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                <input type="number" id="simCongEnd" placeholder="End(s)" style="flex:1; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                            </div>
+                            <button class="btn btn-secondary" onclick="addSimCongestion()" style="width: 100%; justify-content: center;">+ Add Crowd Event</button>
+                            <div id="simCongestionList" style="font-size: 13px; color: #666; max-height: 80px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <button class="btn btn-secondary" onclick="clearSimCongestion()" style="flex:1;">Clear Crowds</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-section actions-section">
+                        <div class="section-label">QUICK ACTIONS</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-danger">🚨 Trigger Alarm</button>
+                            <button class="btn btn-secondary">🔒 Lock Corridor</button>
+                            <button class="btn btn-secondary">✈️ Send Alert</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bottom-footer">
+                <div class="footer-left">
+                    <span class="status-item">System Status: <span class="text-success" id="footerSysStatus">✔
+                            Operational</span></span>
+                    <span class="status-item">Fire Detected: <span class="text-danger"
+                            id="footerFireDetected">No</span></span>
+                    <span class="status-item">Total People: <strong id="footerTotalPeople">0</strong></span>
+                </div>
+                <div class="footer-right">
+                    <span class="last-updated">⏱ Last updated 2s ago</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <audio id="alarm" src="/static/alarm.mp3"></audio>
+
+    <script>
+        function addSimFire() {
+            const shopVal = document.getElementById('simShop').value;
+            const start = document.getElementById('simStart').value;
+            const end = document.getElementById('simEnd').value;
+            
+            if(!shopVal || !start || !end) {
+                alert("Please fill all fields for the simulated fire.");
+                return;
+            }
+            
+            const [row, col] = shopVal.split(',');
+            const shopSelect = document.getElementById('simShop');
+            const shopName = shopSelect.options[shopSelect.selectedIndex].text;
+            
+            fetch('/add_sim_fire', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({row: row, col: col, start: start, end: end})
+            }).then(res => res.json()).then(data => {
+                const list = document.getElementById('simFireList');
+                list.innerHTML += `<div style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; border-left: 3px solid #ff4d4f;">🔥 ${shopName} &nbsp;|&nbsp; ⏱ ${start}s ➡ ${end}s</div>`;
+                document.getElementById('simShop').value = '';
+                document.getElementById('simStart').value = '';
+                document.getElementById('simEnd').value = '';
+            }).catch(err => alert("Error adding simulation fire."));
+        }
+
+        function startSim() {
+            fetch('/start_sim', {method: 'POST'})
+            .then(res => res.json())
+            .then(data => {
+                alert("🚀 Simulation Started!");
+            });
+        }
+
+        function clearSim() {
+            fetch('/clear_sim', {method: 'POST'})
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('simFireList').innerHTML = '';
+                alert("🧹 Simulation Cleared!");
+            });
+        }
+        
+        function addSimCongestion() {
+            const corridor = document.getElementById('simCorridor').value;
+            const people = document.getElementById('simPeople').value;
+            const start = document.getElementById('simCongStart').value;
+            const end = document.getElementById('simCongEnd').value;
+            
+            if(!corridor || people === '' || !start || !end) {
+                alert("Please fill all fields for congestion override.");
+                return;
+            }
+            
+            fetch('/add_sim_congestion', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({corridor: corridor, people: parseInt(people), start: parseFloat(start), end: parseFloat(end)})
+            }).then(res => res.json())
+              .then(data => {
+                  const list = document.getElementById('simCongestionList');
+                  list.innerHTML += `<div style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; border-left: 3px solid #9b59b6;">🚦 ${corridor} &nbsp;|&nbsp; 👥 ${people} &nbsp;|&nbsp; ⏱ ${start}s ➡ ${end}s</div>`;
+                  document.getElementById('simCorridor').value = '';
+                  document.getElementById('simPeople').value = '';
+                  document.getElementById('simCongStart').value = '';
+                  document.getElementById('simCongEnd').value = '';
+              }).catch(err => alert("Error adding congestion."));
+        }
+        
+        function clearSimCongestion() {
+            fetch('/clear_sim_congestion', {method: 'POST'})
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('simCongestionList').innerHTML = '';
+            });
+        }
+        // Fetch existing events on page load to persist the list
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('/get_sim_events')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('simFireList');
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(e => {
+                        list.innerHTML += `<div style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; border-left: 3px solid #ff4d4f;">🔥 ${e.shop_name} &nbsp;|&nbsp; ⏱ ${e.start}s ➡ ${e.end}s</div>`;
+                    });
+                }
+            });
+        });
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
